@@ -5,4 +5,13 @@
     <string name="dialog_title">Oops</string>
     <string name="no_internet">No internet connection</string>
     <string name="ok">OK</string>
+    <string name="add_a_city">Add a city</string>
+    <string name="exit_message">Are you sure you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add_city_error">Insertion error</string>
+    <string name="delete_city_error">Deletion error</string>
+    <string name="load_cities_error">Load cities error</string>
+    <string name="load_weather_error">Unable to load weather forecast</string>
+    <string name="celsius_symbol">°C</string>
 </resources>

@@ -1,6 +1,6 @@
 package gr.georgiopoulos.weather_forecast.network.client
 
-import gr.georgiopoulos.weather_forecast.common.DefinitionsApi
+import gr.georgiopoulos.weather_forecast.common.definitions.DefinitionsApi
 import gr.georgiopoulos.weather_forecast.model.parser.weather_forecast.WeatherForecast
 import gr.georgiopoulos.weather_forecast.network.api.WeatherForecastApi
 import okhttp3.OkHttpClient
@@ -37,7 +37,8 @@ class WeatherForecastClient {
             key = DefinitionsApi.KEY,
             city = city,
             days = DefinitionsApi.DAYS,
-            format = DefinitionsApi.FORMAT
+            format = DefinitionsApi.FORMAT,
+            tp = DefinitionsApi.TP
         )
     }
 }

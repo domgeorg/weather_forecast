@@ -9,15 +9,17 @@ data class WeatherForecast(
 
 data class Data(
     @SerializedName("weather")
-    val weather: List<Weather?>? = arrayListOf()
+    val weatherList: List<Weather?>? = arrayListOf()
 )
+
+interface Forecast
 
 data class Weather(
     @SerializedName("date")
     val date: String? = "",
     @SerializedName("hourly")
-    val hourly: List<Hourly?>? = arrayListOf()
-)
+    val hours: List<Hourly?>? = arrayListOf()
+) : Forecast
 
 data class Hourly(
     @SerializedName("weatherIconUrl")
@@ -28,7 +30,7 @@ data class Hourly(
     val time: String? = "",
     @SerializedName("tempC")
     val tempC: String? = ""
-)
+) : Forecast
 
 data class WeatherDescription(
     @SerializedName("value")

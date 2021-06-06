@@ -1,4 +1,4 @@
-package gr.georgiopoulos.weather_forecast.mvvm.view_model.base
+package gr.georgiopoulos.weather_forecast.view_model.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,3 +1,6 @@
-package gr.georgiopoulos.weather_forecast.model.validator
+package gr.georgiopoulos.weather_forecast.model.validator.wather_forecast
 
-sealed class Validity
+sealed class Validity {
+    object ValidWeatherModel : Validity()
+    object InvalidWeatherModel : Validity()
+}

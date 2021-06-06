@@ -7,9 +7,8 @@ import androidx.lifecycle.Observer
 import com.afollestad.materialdialogs.DialogCallback
 import com.afollestad.materialdialogs.MaterialDialog
 import gr.georgiopoulos.weather_forecast.R
-import gr.georgiopoulos.weather_forecast.databinding.LayoutEmptyBinding
 import gr.georgiopoulos.weather_forecast.databinding.LayoutLoadingBinding
-import gr.georgiopoulos.weather_forecast.mvvm.view_model.base.BaseViewModel
+import gr.georgiopoulos.weather_forecast.view_model.base.BaseViewModel
 
 @SuppressLint("Registered")
 open class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
@@ -23,16 +22,10 @@ open class BaseActivity<T : BaseViewModel> : AppCompatActivity() {
         materialDialog = null
     }
 
-    fun initViewModelState(loadingLayout: LayoutLoadingBinding?, emptyLayout: LayoutEmptyBinding?) {
+    fun initViewModelState(loadingLayout: LayoutLoadingBinding?) {
         viewModel?.showLoadingView()?.observe(this, Observer { value ->
             value?.let { show ->
                 loadingLayout?.root?.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        })
-
-        viewModel?.showEmptyView()?.observe(this, Observer { value ->
-            value?.let { show ->
-                emptyLayout?.root?.visibility = if (show) View.VISIBLE else View.GONE
             }
         })
 

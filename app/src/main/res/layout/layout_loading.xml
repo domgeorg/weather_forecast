@@ -4,17 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:clickable="true"
     android:background="@color/sky"
-    android:focusable="true"
     android:visibility="visible">
 
     <ProgressBar
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="@dimen/dimen_160_dp"
+        android:layout_height="@dimen/dimen_160_dp"
         android:layout_gravity="center"
-        android:indeterminateTint="@color/sun"
-        android:indeterminateTintMode="src_in"
+        android:indeterminateDrawable="@drawable/ic_sun_animation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -7,7 +7,6 @@
     android:clickable="true"
     android:ellipsize="end"
     android:focusable="true"
-    android:inputType="textAutoComplete"
     android:maxLines="1"
     android:padding="@dimen/dimen_10_dp"
     android:textColor="@color/mine_shaft"

@@ -1,38 +1,35 @@
-package gr.georgiopoulos.weather_forecast.ui.adapter.add_city
+package gr.georgiopoulos.weather_forecast.ui.adapter.predictions
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import gr.georgiopoulos.weather_forecast.databinding.LayoutCityBinding
+import gr.georgiopoulos.weather_forecast.common.extensions.autoNotify
+import gr.georgiopoulos.weather_forecast.databinding.LayoutPredictionBinding
+import kotlin.properties.Delegates
 
-class AddCityRecyclerViewAdapter(
+class PredictionsRecyclerViewAdapter(
     private val onCityClick: (String) -> Unit,
-) : RecyclerView.Adapter<AddCityRecyclerViewAdapter.CityViewHolder>() {
+) : RecyclerView.Adapter<PredictionsRecyclerViewAdapter.PredictionViewHolder>() {
 
-    private var cities: MutableList<String> = mutableListOf()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
-        val binding = LayoutCityBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CityViewHolder(binding, onCityClick)
+    var predictions: List<String> by Delegates.observable(emptyList()) { _, oldList, newList ->
+        autoNotify(oldList, newList) { o, n -> o == n }
     }
 
-    override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
-        val city = cities[position]
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PredictionViewHolder {
+        val binding =
+            LayoutPredictionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PredictionViewHolder(binding, onCityClick)
+    }
+
+    override fun onBindViewHolder(holder: PredictionViewHolder, position: Int) {
+        val city = predictions[position]
         holder.bind(city)
     }
 
-    override fun getItemCount(): Int {
-        return cities.size
-    }
+    override fun getItemCount(): Int = predictions.size
 
-    fun setCities(cities: MutableList<String>) {
-        this.cities.clear()
-        this.cities.addAll(cities)
-        notifyDataSetChanged()
-    }
-
-    class CityViewHolder(
-        private val binding: LayoutCityBinding,
+    class PredictionViewHolder(
+        private val binding: LayoutPredictionBinding,
         private val onCityClick: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(city: String) {

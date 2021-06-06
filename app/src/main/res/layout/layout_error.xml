@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/sky"
+    android:id="@+id/error"
     android:clickable="true"
     android:focusable="true">
 
@@ -11,13 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_80_dp"
         android:src="@drawable/ic_cloud"
-        app:layout_constraintBottom_toTopOf="@id/no_results"
+        app:layout_constraintBottom_toTopOf="@id/error_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/no_results"
+        android:id="@+id/error_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

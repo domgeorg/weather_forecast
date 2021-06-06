@@ -2,7 +2,7 @@
 
     <style name="Theme.Weather_forecast" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/sky</item>
-        <item name="colorPrimaryDark">@color/teal_200</item>
+        <item name="colorPrimaryDark">@color/sky</item>
         <item name="colorAccent">@color/sun</item>
     </style>
 
