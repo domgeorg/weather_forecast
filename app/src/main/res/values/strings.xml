@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Weather Forecast</string>
+    <string name="no_results">No results</string>
+    <string name="generic_error">Oops! There was an error</string>
+    <string name="dialog_title">Oops</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="ok">OK</string>
+</resources>

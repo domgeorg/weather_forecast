@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Common Text Scale-independent Pixels -->
+    <dimen name="text_12_sp">12sp</dimen>
+    <dimen name="text_14_sp">14sp</dimen>
+    <dimen name="text_16_sp">16sp</dimen>
+    <dimen name="text_18_sp">18sp</dimen>
+    <dimen name="text_24_sp">24sp</dimen>
+
+    <!-- Common Density-independent Pixels-->
+    <dimen name="dimen_160_dp">160dp</dimen>
+    <dimen name="dimen_80_dp">80dp</dimen>
+</resources>

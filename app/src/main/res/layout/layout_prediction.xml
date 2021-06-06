@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/city_name"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dimen_44_dp"
+    android:clickable="true"
+    android:ellipsize="end"
+    android:focusable="true"
+    android:inputType="textAutoComplete"
+    android:maxLines="1"
+    android:padding="@dimen/dimen_10_dp"
+    android:textColor="@color/mine_shaft"
+    android:textSize="@dimen/text_18_sp"
+    tools:text="City" />
