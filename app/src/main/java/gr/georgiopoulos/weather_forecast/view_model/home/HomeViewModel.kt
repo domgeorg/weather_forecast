@@ -5,12 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import gr.georgiopoulos.weather_forecast.model.error.Error
 import gr.georgiopoulos.weather_forecast.model.ui.weather_forecast.WeatherForecastUiModel
 import gr.georgiopoulos.weather_forecast.use_case.database_access.DatabaseAccessUseCase
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.DatabaseAccessResult
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.load.DatabaseAccessLoadCitiesResult
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Outcome
+import gr.georgiopoulos.weather_forecast.use_case.outcome.exhaustive
 import gr.georgiopoulos.weather_forecast.use_case.places.PlacesUseCase
 import gr.georgiopoulos.weather_forecast.use_case.places.result.PlacesResult
 import gr.georgiopoulos.weather_forecast.use_case.weather_forecast.WeatherForecastUseCase
-import gr.georgiopoulos.weather_forecast.use_case.weather_forecast.result.WeatherResult
 import gr.georgiopoulos.weather_forecast.view_model.base.BaseViewModel
 import kotlinx.coroutines.launch
 
@@ -55,57 +54,34 @@ class HomeViewModel(
     }
 
     fun loadCities() {
-        databaseAccessUseCase.loadCities(object : DatabaseAccessLoadCitiesResult {
-            override fun onSuccess(cities: List<String>) {
-                citiesMutableStream.value = cities
-            }
-
-            override fun onError() {
-                errorMutableStream.value = Error.LoadCitiesError
-            }
-        })
+        when (val outcome = databaseAccessUseCase.loadCities()) {
+            is Outcome.Error -> errorMutableStream.value = Error.LoadCitiesError
+            is Outcome.Success -> citiesMutableStream.value = outcome.value
+        }
     }
 
     fun addCity(city: String) {
-        databaseAccessUseCase.addCity(city,
-            object : DatabaseAccessResult {
-                override fun onSuccess() {
-                    loadCities()
-                }
-
-                override fun onError() {
-                    errorMutableStream.value = Error.AddCityError
-                }
-            })
+        when (databaseAccessUseCase.addCity(city)) {
+            is Outcome.Error -> errorMutableStream.value = Error.AddCityError
+            is Outcome.Success -> loadCities()
+        }
     }
 
     fun deleteCity(city: String) {
-        databaseAccessUseCase.deleteCity(city,
-            object : DatabaseAccessResult {
-                override fun onSuccess() {
-                    loadCities()
-                }
-
-                override fun onError() {
-                    errorMutableStream.value = Error.DeleteCityError
-                }
-            })
+        when (databaseAccessUseCase.deleteCity(city)) {
+            is Outcome.Error -> errorMutableStream.value = Error.DeleteCityError
+            is Outcome.Success -> loadCities()
+        }
     }
 
     fun getWeather(city: String) {
         uiScope.launch {
             loadingLiveData.value = true
 
-            weatherForecastUseCase.getWeather(city,
-                object : WeatherResult {
-                    override fun onSuccess(weatherForecast: ArrayList<WeatherForecastUiModel>) {
-                        weatherForecastMutableStream.value = Pair(city, weatherForecast)
-                    }
-
-                    override fun onError() {
-                        errorMutableStream.value = Error.LoadCitiesError
-                    }
-                })
+            when (val outcome = weatherForecastUseCase.getWeather(city)) {
+                is Outcome.Error -> errorMutableStream.value = Error.LoadCitiesError
+                is Outcome.Success -> weatherForecastMutableStream.value = Pair(city, outcome.value)
+            }.exhaustive
 
             loadingLiveData.value = false
         }

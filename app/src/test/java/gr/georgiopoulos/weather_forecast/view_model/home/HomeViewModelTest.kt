@@ -6,12 +6,11 @@ import com.nhaarman.mockitokotlin2.verify
 import gr.georgiopoulos.weather_forecast.model.error.Error.*
 import gr.georgiopoulos.weather_forecast.model.ui.weather_forecast.WeatherForecastUiModel
 import gr.georgiopoulos.weather_forecast.use_case.database_access.DatabaseAccessUseCase
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.DatabaseAccessResult
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.load.DatabaseAccessLoadCitiesResult
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Empty
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Outcome
 import gr.georgiopoulos.weather_forecast.use_case.places.PlacesUseCase
 import gr.georgiopoulos.weather_forecast.use_case.places.result.PlacesResult
 import gr.georgiopoulos.weather_forecast.use_case.weather_forecast.WeatherForecastUseCase
-import gr.georgiopoulos.weather_forecast.use_case.weather_forecast.result.WeatherResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -20,6 +19,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.*
 import org.mockito.*
+import org.mockito.Mockito.`when`
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -42,15 +42,6 @@ class HomeViewModelTest {
 
     @Captor
     private lateinit var placesResultCaptor: ArgumentCaptor<PlacesResult>
-
-    @Captor
-    private lateinit var loadCitiesResultCaptor: ArgumentCaptor<DatabaseAccessLoadCitiesResult>
-
-    @Captor
-    private lateinit var databaseAccessResultCaptor: ArgumentCaptor<DatabaseAccessResult>
-
-    @Captor
-    private lateinit var weatherResultCaptor: ArgumentCaptor<WeatherResult>
 
     private val dummyCity = UUID.randomUUID().toString()
 
@@ -171,10 +162,9 @@ class HomeViewModelTest {
     //region loadCities
     @Test
     fun `given success when load cities then should post cities`() {
-        homeViewModel.loadCities()
+        `when`(mockDatabaseAccessUseCase.loadCities()).then { Outcome.Success(dummyCities) }
 
-        verify(mockDatabaseAccessUseCase).loadCities(capture(loadCitiesResultCaptor))
-        loadCitiesResultCaptor.value.onSuccess(dummyCities)
+        homeViewModel.loadCities()
 
         homeViewModel.cities.observeForever {
             Assert.assertEquals(it, dummyCities)
@@ -183,10 +173,9 @@ class HomeViewModelTest {
 
     @Test
     fun `given error when load cities then should post LoadCitiesError`() {
-        homeViewModel.loadCities()
+        `when`(mockDatabaseAccessUseCase.loadCities()).then { Outcome.Error }
 
-        verify(mockDatabaseAccessUseCase).loadCities(capture(loadCitiesResultCaptor))
-        loadCitiesResultCaptor.value.onError()
+        homeViewModel.loadCities()
 
         homeViewModel.error.observeForever {
             Assert.assertEquals(it, LoadCitiesError)
@@ -197,13 +186,10 @@ class HomeViewModelTest {
     //region addCity
     @Test
     fun `given success when add city and success load cities then should post cities`() {
+        `when`(mockDatabaseAccessUseCase.addCity(dummyCity)).then { Outcome.Success(Empty()) }
+        `when`(mockDatabaseAccessUseCase.loadCities()).then { Outcome.Success(dummyCities) }
+
         homeViewModel.addCity(dummyCity)
-
-        verify(mockDatabaseAccessUseCase).addCity(any(), capture(databaseAccessResultCaptor))
-        databaseAccessResultCaptor.value.onSuccess()
-
-        verify(mockDatabaseAccessUseCase).loadCities(capture(loadCitiesResultCaptor))
-        loadCitiesResultCaptor.value.onSuccess(dummyCities)
 
         homeViewModel.cities.observeForever {
             Assert.assertEquals(it, dummyCities)
@@ -212,10 +198,10 @@ class HomeViewModelTest {
 
     @Test
     fun `given error when add city then should post AddCityError`() {
+        `when`(mockDatabaseAccessUseCase.addCity(dummyCity)).then { Outcome.Error }
+
         homeViewModel.addCity(dummyCity)
 
-        verify(mockDatabaseAccessUseCase).addCity(any(), capture(databaseAccessResultCaptor))
-        databaseAccessResultCaptor.value.onError()
 
         homeViewModel.error.observeForever {
             Assert.assertEquals(it, AddCityError)
@@ -226,13 +212,11 @@ class HomeViewModelTest {
     //region deleteCity
     @Test
     fun `given success when delete city and success load cities then should post cities`() {
+        `when`(mockDatabaseAccessUseCase.deleteCity(dummyCity)).then { Outcome.Success(Empty()) }
+        `when`(mockDatabaseAccessUseCase.loadCities()).then { Outcome.Success(dummyCities) }
+
         homeViewModel.deleteCity(dummyCity)
 
-        verify(mockDatabaseAccessUseCase).deleteCity(any(), capture(databaseAccessResultCaptor))
-        databaseAccessResultCaptor.value.onSuccess()
-
-        verify(mockDatabaseAccessUseCase).loadCities(capture(loadCitiesResultCaptor))
-        loadCitiesResultCaptor.value.onSuccess(dummyCities)
 
         homeViewModel.cities.observeForever {
             Assert.assertEquals(it, dummyCities)
@@ -241,10 +225,9 @@ class HomeViewModelTest {
 
     @Test
     fun `given error when delete city then should post DeleteCityError`() {
-        homeViewModel.deleteCity(dummyCity)
+        `when`(mockDatabaseAccessUseCase.addCity(dummyCity)).then { Outcome.Error }
 
-        verify(mockDatabaseAccessUseCase).deleteCity(any(), capture(databaseAccessResultCaptor))
-        databaseAccessResultCaptor.value.onError()
+        homeViewModel.deleteCity(dummyCity)
 
         homeViewModel.error.observeForever {
             Assert.assertEquals(it, DeleteCityError)
@@ -256,10 +239,13 @@ class HomeViewModelTest {
     @Test
     fun `given success when get weather then should post city and weatherForecast`() =
         runBlocking {
-            homeViewModel.getWeather(dummyCity)
+            `when`(mockWeatherForecastUseCase.getWeather(dummyCity)).then {
+                Outcome.Success(
+                    dummyWeatherForecast
+                )
+            }
 
-            verify(mockWeatherForecastUseCase).getWeather(any(), capture(weatherResultCaptor))
-            weatherResultCaptor.value.onSuccess(dummyWeatherForecast)
+            homeViewModel.getWeather(dummyCity)
 
             homeViewModel.weatherForecast.observeForever {
                 Assert.assertEquals(it, Pair(dummyCity, dummyWeatherForecast))
@@ -269,10 +255,9 @@ class HomeViewModelTest {
     @Test
     fun `given error when get weather then should post LoadCitiesError`() =
         runBlocking {
-            homeViewModel.getWeather(dummyCity)
+            `when`(mockWeatherForecastUseCase.getWeather(dummyCity)).then { Outcome.Error }
 
-            verify(mockWeatherForecastUseCase).getWeather(any(), capture(weatherResultCaptor))
-            weatherResultCaptor.value.onError()
+            homeViewModel.getWeather(dummyCity)
 
             homeViewModel.error.observeForever {
                 Assert.assertEquals(it, LoadCitiesError)

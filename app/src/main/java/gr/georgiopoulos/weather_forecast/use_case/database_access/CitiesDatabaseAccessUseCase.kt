@@ -3,69 +3,67 @@ package gr.georgiopoulos.weather_forecast.use_case.database_access
 import gr.georgiopoulos.weather_forecast.common.logger.Logger
 import gr.georgiopoulos.weather_forecast.database.CityDatabase
 import gr.georgiopoulos.weather_forecast.database.dao.CityTable
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.DatabaseAccessResult
-import gr.georgiopoulos.weather_forecast.use_case.database_access.result.load.DatabaseAccessLoadCitiesResult
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Empty
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Outcome
 
 class CitiesDatabaseAccessUseCase(
     private val citiesDatabase: CityDatabase,
     private val logger: Logger
 ) : DatabaseAccessUseCase {
 
-    override fun addCity(city: String?, databaseAccessResult: DatabaseAccessResult) {
+    override fun addCity(city: String?): Outcome<Empty> {
         if (city.isNullOrEmpty()) {
-            databaseAccessResult.onError()
             logger.logError("CitiesDatabaseAccessUseCase -> addCity", "invalid city name $city")
-            return
+            return Outcome.Error
         }
-        try {
+        return try {
             val cityNameTransformed = city.substringBefore(DELIMITER)
             citiesDatabase.cityTableDao().insertCity(CityTable(cityNameTransformed))
-            databaseAccessResult.onSuccess()
             logger.logInfo("CitiesDatabaseAccessUseCase -> addCity", "success insertion")
+            Outcome.Success(Empty())
         } catch (e: Exception) {
-            databaseAccessResult.onError()
             logger.logError(
                 "CitiesDatabaseAccessUseCase -> addCity",
                 "exception ${e.localizedMessage}"
             )
+            Outcome.Error
         }
     }
 
-    override fun loadCities(loadCitiesResult: DatabaseAccessLoadCitiesResult) {
-        try {
+    override fun loadCities(): Outcome<List<String>> {
+        return try {
             val citiesFromDataBase = citiesDatabase.cityTableDao().loadAll()
             val result = ArrayList<String>()
             citiesFromDataBase.map { result.add(it.name) }
-            loadCitiesResult.onSuccess(result)
+            Outcome.Success(result)
         } catch (e: Exception) {
-            loadCitiesResult.onError()
             logger.logError(
                 "CitiesDatabaseAccessUseCase -> loadCities",
                 "exception ${e.localizedMessage}"
             )
+            Outcome.Error
         }
     }
 
-    override fun deleteCity(city: String?, databaseAccessResult: DatabaseAccessResult) {
+    override fun deleteCity(city: String?): Outcome<Empty> {
         if (city.isNullOrEmpty()) {
-            databaseAccessResult.onError()
             logger.logError("CitiesDatabaseAccessUseCase -> deleteCity", "invalid city name $city")
-            return
+            return Outcome.Error
         }
-        try {
+        return try {
             citiesDatabase.cityTableDao().deleteCity(city)
-            databaseAccessResult.onSuccess()
             logger.logInfo("CitiesDatabaseAccessUseCase -> deleteCity", "success deletion")
+            Outcome.Success(Empty())
         } catch (e: Exception) {
-            databaseAccessResult.onError()
             logger.logError(
                 "CitiesDatabaseAccessUseCase -> deleteCity",
                 "exception ${e.localizedMessage}"
             )
+            Outcome.Error
         }
     }
 
-    companion object{
+    companion object {
         const val DELIMITER = ","
     }
 }

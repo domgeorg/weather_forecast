@@ -6,7 +6,7 @@ import gr.georgiopoulos.weather_forecast.model.ui.weather_forecast.WeatherForeca
 import gr.georgiopoulos.weather_forecast.model.validator.wather_forecast.Validator
 import gr.georgiopoulos.weather_forecast.model.validator.wather_forecast.Validity
 import gr.georgiopoulos.weather_forecast.network.client.WeatherForecastClient
-import gr.georgiopoulos.weather_forecast.use_case.weather_forecast.result.WeatherResult
+import gr.georgiopoulos.weather_forecast.use_case.outcome.Outcome
 
 class FetchWeatherForecastUseCase(
     private val weatherForecastClient: WeatherForecastClient,
@@ -15,15 +15,10 @@ class FetchWeatherForecastUseCase(
     private val commonLogger: CommonLogger
 ) : WeatherForecastUseCase {
 
-    override suspend fun getWeather(city: String, result: WeatherResult) {
+    override suspend fun getWeather(city: String): Outcome<ArrayList<WeatherForecastUiModel>> {
         try {
             val response = weatherForecastClient.getWeatherForecast(city)
-            val weatherList = response.data?.weatherList
-
-            if (weatherList == null) {
-                result.onError()
-                return
-            }
+            val weatherList = response.data?.weatherList ?: return Outcome.Error
 
             val weatherForecast: ArrayList<WeatherForecastUiModel> = arrayListOf()
             weatherList.map { weather ->
@@ -45,14 +40,13 @@ class FetchWeatherForecastUseCase(
             }
 
             if (weatherForecast.isEmpty()) {
-                result.onError()
-                return
+                return Outcome.Error
             }
-            result.onSuccess(weatherForecast)
+            return Outcome.Success(weatherForecast)
 
         } catch (e: Exception) {
-            result.onError()
             commonLogger.logError("FetchWeatherForecastUseCase -> getWeather", e.message ?: "")
+            return Outcome.Error
         }
     }
 }
