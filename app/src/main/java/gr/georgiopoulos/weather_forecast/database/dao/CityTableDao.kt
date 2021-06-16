@@ -14,6 +14,9 @@ interface CityTableDao {
     @Query("DELETE FROM CityTable WHERE name = :name")
     fun deleteCity(name: String)
 
+    /**
+     * This is an example, never fetch everything from a table
+     * */
     @Query("select * from CityTable order by name ASC")
     fun loadAll(): List<CityTable>
 }
